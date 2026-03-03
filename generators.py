@@ -20,7 +20,7 @@ def _claude(prompt: str, max_tokens: int = 1200, retries: int = 3) -> str:
                 "Content-Type": "application/json",
             },
             json={
-                "model": "meta-llama/llama-3.1-8b-instruct:free",
+                "model": "mistralai/mistral-7b-instruct:free",
                 "max_tokens": max_tokens,
                 "messages": [{"role": "user", "content": prompt}],
             },
