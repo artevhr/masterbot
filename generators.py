@@ -14,7 +14,7 @@ import config
 def _claude(prompt: str, max_tokens: int = 1200, retries: int = 3) -> str:
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemini-1.5-flash:generateContent?key={config.GEMINI_KEY}"
+        f"gemini-2.0-flash-lite:generateContent?key={config.GEMINI_KEY}"
     )
     for attempt in range(retries):
         response = requests.post(
