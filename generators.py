@@ -11,7 +11,6 @@ import config
 # ══════════════════════════════════════════════════════════════
 
 def _claude(prompt: str, max_tokens: int = 1200) -> str:
-    """Универсальный вызов Claude API."""
     response = requests.post(
         "https://api.anthropic.com/v1/messages",
         headers={
@@ -26,6 +25,8 @@ def _claude(prompt: str, max_tokens: int = 1200) -> str:
         },
         timeout=40,
     )
+    if not response.ok:
+        print(f"Anthropic error {response.status_code}: {response.text}")
     response.raise_for_status()
     return response.json()["content"][0]["text"].strip()
 
