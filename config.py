@@ -12,7 +12,7 @@ BOT_TOKEN = os.environ["BOT_TOKEN"]
 ADMIN_ID = int(os.environ["ADMIN_ID"])
 
 # Anthropic API
-ANTHROPIC_KEY = os.environ["ANTHROPIC_API_KEY"]
+GEMINI_KEY = os.environ["GEMINI_API_KEY"]
 
 # ── Канал 1: Новости ──────────────────────────────────────────
 NEWS_CHANNEL_ID    = os.environ["NEWS_CHANNEL_ID"]     # @channel1 или -100xxx
