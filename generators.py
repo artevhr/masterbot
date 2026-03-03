@@ -20,7 +20,7 @@ def _claude(prompt: str, max_tokens: int = 1200) -> str:
             "content-type": "application/json",
         },
         json={
-            "model": "claude-sonnet-4-20250514",
+            "model": "claude-sonnet-4-5",
             "max_tokens": max_tokens,
             "messages": [{"role": "user", "content": prompt}],
         },
