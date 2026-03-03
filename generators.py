@@ -2,6 +2,7 @@ import requests
 import random
 import re
 import hashlib
+import os
 import xml.etree.ElementTree as ET
 from datetime import datetime
 import config
@@ -10,9 +11,10 @@ import config
 #  ГЕНЕРАТОРЫ КОНТЕНТА
 # ══════════════════════════════════════════════════════════════
 
+GEMINI_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+
 def _claude(prompt: str, max_tokens: int = 1200) -> str:
-    """Универсальный вызов Gemini API (бесплатно)."""
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={config.ANTHROPIC_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_KEY}"
     
     response = requests.post(
         url,
