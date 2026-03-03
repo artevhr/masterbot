@@ -11,29 +11,48 @@ import config
 #  ГЕНЕРАТОРЫ КОНТЕНТА
 # ══════════════════════════════════════════════════════════════
 
-def _claude(prompt: str, max_tokens: int = 1200, retries: int = 3) -> str:
-    for attempt in range(retries):
-        response = requests.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {config.OPENROUTER_KEY}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "model": "google/gemma-3-4b-it:free",
-                "max_tokens": max_tokens,
-                "messages": [{"role": "user", "content": prompt}],
-            },
-            timeout=40,
-        )
-        if response.status_code == 429:
-            wait = 60 * (attempt + 1)
-            print(f"Rate limit, жду {wait}с...")
-            time.sleep(wait)
-            continue
-        response.raise_for_status()
-        return response.json()["choices"][0]["message"]["content"].strip()
-    raise Exception("OpenRouter недоступен после нескольких попыток")
+FALLBACK_MODELS = [
+    "google/gemma-3-4b-it:free",
+    "meta-llama/llama-3.2-3b-instruct:free",
+    "mistralai/mistral-7b-instruct:free",
+    "qwen/qwen-2.5-7b-instruct:free",
+    "google/gemma-3-1b-it:free",
+]
+
+def _claude(prompt: str, max_tokens: int = 1200, retries: int = 2) -> str:
+    for model in FALLBACK_MODELS:
+        for attempt in range(retries):
+            try:
+                response = requests.post(
+                    "https://openrouter.ai/api/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {config.OPENROUTER_KEY}",
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "model": model,
+                        "max_tokens": max_tokens,
+                        "messages": [{"role": "user", "content": prompt}],
+                    },
+                    timeout=40,
+                )
+                if response.status_code == 429:
+                    wait = 30 * (attempt + 1)
+                    print(f"[{model}] Rate limit, жду {wait}с...")
+                    time.sleep(wait)
+                    continue
+                response.raise_for_status()
+                result = response.json()["choices"][0]["message"]["content"].strip()
+                print(f"[OK] Использована модель: {model}")
+                return result
+            except requests.HTTPError as e:
+                print(f"[{model}] HTTP ошибка: {e}, пробую следующую модель...")
+                break
+            except Exception as e:
+                print(f"[{model}] Ошибка: {e}, пробую следующую модель...")
+                break
+    raise Exception("Все модели OpenRouter недоступны")
+
     
 def _pick_lang(lang: str) -> str:
     if lang == "both":
