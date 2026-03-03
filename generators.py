@@ -71,20 +71,19 @@ def generate_ai_post(lang: str = None) -> str:
         prompt = f"""Ты — автор популярного Telegram-канала. Тема: {config.POST_TOPIC}.
 Напиши пост в формате: {fmt}.
 - Язык: русский, живой и разговорный
-- Длина: 150–350 слов
+- Длина: 50-200 слов (старайся кратко, по делу, дабы читачелям было не лень читать)
 - Начни с крючка (первые 2 строки — цепляющие)
 - 2–4 эмодзи органично в тексте
 - В конце: вопрос или призыв к реакции
 - 3–5 хэштегов в конце
 - Дата: {today}
-- Без заголовка — сразу текст
 Только текст поста."""
     else:
         fmt = random.choice(config.POST_FORMATS_EN)
         prompt = f"""You are a popular Telegram channel author. Topic: {config.POST_TOPIC}.
 Write a post in this format: {fmt}.
 - Language: English, lively and conversational
-- Length: 150–350 words
+- Length: 50-200 words
 - Start with a hook (first 2 lines must grab attention)
 - 2–4 emojis naturally in the text
 - End with a question or call to react
@@ -196,10 +195,10 @@ def fetch_and_generate_news(lang: str = None) -> str | None:
 ЗАГОЛОВОК: {item['title']}
 СОДЕРЖАНИЕ: {item['desc']}
 - Язык: живой русский, без канцелярита
-- Длина: 120–250 слов
-- Начни с цепляющей фразы (не с заголовка)
+- Длина: 50-200 слов (старайся без воды, чтобы читатель читал, а не думал "очередной хлам)
+- Начни с цепляющей фразы (иногда с заголовка)
 - Объясни почему это важно
-- 2–3 эмодзи органично
+- 2 эмодзи органично
 - В конце: вывод или вопрос
 - 3–4 хэштега
 - Без "по данным...", "как сообщает..." — пиши от себя
@@ -209,7 +208,7 @@ def fetch_and_generate_news(lang: str = None) -> str | None:
 HEADLINE: {item['title']}
 CONTENT: {item['desc']}
 - Language: lively English, conversational
-- Length: 120–250 words
+- Length: 50-200 words
 - Start with a hook (not the headline)
 - Explain why it matters
 - 2–3 emojis naturally placed
