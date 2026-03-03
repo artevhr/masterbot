@@ -14,7 +14,7 @@ import config
 GEMINI_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 
 def _claude(prompt: str, max_tokens: int = 1200) -> str:
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_KEY}"
     
     response = requests.post(
         url,
