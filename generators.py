@@ -11,11 +11,10 @@ import config
 #  ГЕНЕРАТОРЫ КОНТЕНТА
 # ══════════════════════════════════════════════════════════════
 
-GEMINI_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
 
 def _claude(prompt: str, max_tokens: int = 1200) -> str:
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_KEY}"
-    
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_KEY}"
     response = requests.post(
         url,
         headers={"content-type": "application/json"},
@@ -25,11 +24,7 @@ def _claude(prompt: str, max_tokens: int = 1200) -> str:
         },
         timeout=40,
     )
-    
-    if not response.ok:
-        print(f"Gemini error {response.status_code}: {response.text}")
     response.raise_for_status()
-    
     return response.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
 
 
