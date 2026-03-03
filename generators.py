@@ -12,29 +12,29 @@ import config
 # ══════════════════════════════════════════════════════════════
 
 def _claude(prompt: str, max_tokens: int = 1200, retries: int = 3) -> str:
-    url = (
-        f"https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemini-2.0-flash-lite-001:generateContent?key={config.GEMINI_KEY}"
-    )
     for attempt in range(retries):
         response = requests.post(
-            url,
-            headers={"Content-Type": "application/json"},
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {config.OPENROUTER_KEY}",
+                "Content-Type": "application/json",
+            },
             json={
-                "contents": [{"parts": [{"text": prompt}]}],
-                "generationConfig": {"maxOutputTokens": max_tokens},
+                "model": "meta-llama/llama-3.3-8b-instruct:free",
+                "max_tokens": max_tokens,
+                "messages": [{"role": "user", "content": prompt}],
             },
             timeout=40,
         )
         if response.status_code == 429:
             wait = 60 * (attempt + 1)
-            print(f"Gemini rate limit, жду {wait}с...")
+            print(f"Rate limit, жду {wait}с...")
             time.sleep(wait)
             continue
         response.raise_for_status()
-        return response.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
-    raise Exception("Gemini недоступен после нескольких попыток")
-
+        return response.json()["choices"][0]["message"]["content"].strip()
+    raise Exception("OpenRouter недоступен после нескольких попыток")
+    
 def _pick_lang(lang: str) -> str:
     if lang == "both":
         return random.choice(["russian", "english"])
