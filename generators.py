@@ -2,7 +2,7 @@ import requests
 import random
 import re
 import hashlib
-import os
+import time
 import xml.etree.ElementTree as ET
 from datetime import datetime
 import config
@@ -10,8 +10,6 @@ import config
 # ══════════════════════════════════════════════════════════════
 #  ГЕНЕРАТОРЫ КОНТЕНТА
 # ══════════════════════════════════════════════════════════════
-
-GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
 
 def _claude(prompt: str, max_tokens: int = 1200, retries: int = 3) -> str:
     url = (
@@ -36,6 +34,11 @@ def _claude(prompt: str, max_tokens: int = 1200, retries: int = 3) -> str:
         response.raise_for_status()
         return response.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
     raise Exception("Gemini недоступен после нескольких попыток")
+
+def _pick_lang(lang: str) -> str:
+    if lang == "both":
+        return random.choice(["russian", "english"])
+    return lang if lang in ("russian", "english") else "russian"
 
 
 # ── Генератор: AI-Постер ──────────────────────────────────────
