@@ -13,25 +13,29 @@ import config
 
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
 
-def _claude(prompt: str, max_tokens: int = 1200) -> str:
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_KEY}"
-    response = requests.post(
-        url,
-        headers={"content-type": "application/json"},
-        json={
-            "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {"maxOutputTokens": max_tokens},
-        },
-        timeout=40,
+def _claude(prompt: str, max_tokens: int = 1200, retries: int = 3) -> str:
+    url = (
+        f"https://generativelanguage.googleapis.com/v1beta/models/"
+        f"gemini-1.5-flash:generateContent?key={config.GEMINI_KEY}"
     )
-    response.raise_for_status()
-    return response.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
-
-
-def _pick_lang(lang: str) -> str:
-    if lang == "both":
-        return random.choice(["russian", "english"])
-    return lang if lang in ("russian", "english") else "russian"
+    for attempt in range(retries):
+        response = requests.post(
+            url,
+            headers={"Content-Type": "application/json"},
+            json={
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {"maxOutputTokens": max_tokens},
+            },
+            timeout=40,
+        )
+        if response.status_code == 429:
+            wait = 60 * (attempt + 1)
+            print(f"Gemini rate limit, жду {wait}с...")
+            time.sleep(wait)
+            continue
+        response.raise_for_status()
+        return response.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+    raise Exception("Gemini недоступен после нескольких попыток")
 
 
 # ── Генератор: AI-Постер ──────────────────────────────────────
