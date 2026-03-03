@@ -11,24 +11,24 @@ import config
 # ══════════════════════════════════════════════════════════════
 
 def _claude(prompt: str, max_tokens: int = 1200) -> str:
+    """Универсальный вызов Gemini API (бесплатно)."""
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={config.ANTHROPIC_KEY}"
+    
     response = requests.post(
-        "https://api.anthropic.com/v1/messages",
-        headers={
-            "x-api-key": config.ANTHROPIC_KEY,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-        },
+        url,
+        headers={"content-type": "application/json"},
         json={
-            "model": "claude-sonnet-4-5",
-            "max_tokens": max_tokens,
-            "messages": [{"role": "user", "content": prompt}],
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {"maxOutputTokens": max_tokens},
         },
         timeout=40,
     )
+    
     if not response.ok:
-        print(f"Anthropic error {response.status_code}: {response.text}")
+        print(f"Gemini error {response.status_code}: {response.text}")
     response.raise_for_status()
-    return response.json()["content"][0]["text"].strip()
+    
+    return response.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
 
 
 def _pick_lang(lang: str) -> str:
